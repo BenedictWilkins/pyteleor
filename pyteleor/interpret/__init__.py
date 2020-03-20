@@ -1,9 +1,12 @@
 from ply import lex
 from ply import yacc
 
-tokens = ('NAME', 'IMPLY', 'LPAREN', 'RPAREN', 'COMMA', 
+
+tokens = ('COMMENT', 'STR', 'NAME', 'IMPLY', 'LPAREN', 'RPAREN', 'COMMA', 'NEWLINE',
           'FLOAT', 'INT', 'LT', 'GT', 'LTE', 'GTE', 'E')
 
+t_ignore_COMMENT = r"\#.*"
+t_STR = r"[\'\"](.+?)[\'\"]"
 t_NAME = r"[a-zA-Z]+[a-zA-z0-9]*"
 t_IMPLY = r"->"
 t_LPAREN = r"\("
@@ -26,33 +29,45 @@ t_GT  = r">"
 t_LTE = r"<="
 t_GTE = r">="
 t_E   = r"=="
+
+comparison_operators = {t_LT:lambda x, y: x < y,
+                        t_GT:lambda x, y: x > y,
+                        t_LTE: lambda x, y: x <= y,
+                        t_GTE: lambda x, y: x >= y,
+                        t_E: lambda x, y: x == y}
  
 t_ignore = " \t"
 
-def t_newline(t):
+def t_NEWLINE(t):
     r'\n+'
     t.lexer.lineno += t.value.count("\n")
+    return t
 
 lex.lex()
 
+def p_programn(p):
+    ''' program : rule NEWLINE program '''
+    p[0] = [p[1], *p[3]]
+
+def p_program1(p):
+    ''' program : NEWLINE NEWLINE
+                | rule 
+                | rule NEWLINE '''
+    p[0] = [p[1]]
+
 def p_rule(p):
-    '''rule : conditions IMPLY actions'''
-    print('rule:')
-    print('-- conditions:')
-    for c in p[1]:
-        print("   ", c)
-    print('-- actions')
-    for a in p[3]:
-        print("   ", a)
+    '''rule : conditions IMPLY actions '''
+    p[0] = (p[1], p[3]) #conditions, actions
+    print(p[0])
 
 # conditions
 def p_conditions0(p):
     ''' conditions : empty '''
-    p[0] = tuple()
+    p[0] = []
 
 def p_conditions1(p):
     ''' conditions : condition '''
-    p[0] = (p[1],)
+    p[0] = [p[1]]
 
 def p_conditionsn(p):
     ''' conditions : condition COMMA conditions '''
@@ -61,11 +76,11 @@ def p_conditionsn(p):
 # actions
 def p_actions0(p):
     ''' actions : empty '''
-    p[0] = tuple()
+    p[0] = []
 
 def p_actions1(p):
     ''' actions : action '''
-    p[0] = (p[1],)
+    p[0] = [p[1]]
 
 def p_actionsn(p):
     ''' actions : action COMMA actions '''
@@ -81,13 +96,12 @@ def p_condition(p):
 
 def p_statement(p):
     '''statement : NAME LPAREN args RPAREN'''
-    p[0] = [p[1], p[3]]
-    print('statement', '~'.join([str(s) for s in p]))
-
+    p[0] = (p[1], p[3])
+    #print('statement', p[0])
 
 def p_compare(p):
     ''' condition : arg operator arg '''
-    p[0] = [p[2], (p[1], p[3])]
+    p[0] = (p[2], (p[1], p[3]))
 
 def p_coperator(p):
     ''' operator : LT 
@@ -98,7 +112,7 @@ def p_coperator(p):
     p[0] = p[1]
 
 def p_empty(p):
-    'empty :'
+    'empty : '
     pass
 
 def p_args0(p):
@@ -114,16 +128,23 @@ def p_argsn(p):
     p[0] = (p[1], *p[3])
 
 def p_arg(p):
-    '''arg : NAME 
+    '''arg : STR
            | FLOAT
            | INT ''' 
     p[0] = p[1]
 
+def p_arg_name(p):
+    '''arg : NAME '''
+    p[0] = p[1]
+
 yacc.yacc()
 
-while True:
-    try:
-        s = input('calc > ')
-    except EOFError:
-        break
-    yacc.parse(s)
+if __name__ == "__main__":
+    yacc.parse("a(\"test\") -> b() \n a() -> d(1) #comment \n #comment2 \n")
+
+    while True:
+        try:
+            s = input(' > ')
+        except EOFError:
+            break
+        yacc.parse(s)
