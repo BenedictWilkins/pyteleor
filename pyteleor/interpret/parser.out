@@ -1,0 +1,448 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> rule
+Rule 1     rule -> conditions IMPLY actions
+Rule 2     conditions -> empty
+Rule 3     conditions -> condition
+Rule 4     conditions -> condition COMMA conditions
+Rule 5     actions -> empty
+Rule 6     actions -> action
+Rule 7     actions -> action COMMA actions
+Rule 8     action -> statement
+Rule 9     condition -> statement
+Rule 10    statement -> NAME LPAREN args RPAREN
+Rule 11    condition -> arg operator arg
+Rule 12    operator -> LT
+Rule 13    operator -> GT
+Rule 14    operator -> LTE
+Rule 15    operator -> GTE
+Rule 16    operator -> E
+Rule 17    empty -> <empty>
+Rule 18    args -> empty
+Rule 19    args -> arg
+Rule 20    args -> arg COMMA args
+Rule 21    arg -> NAME
+Rule 22    arg -> FLOAT
+Rule 23    arg -> INT
+
+Terminals, with rules where they appear
+
+COMMA                : 4 7 20
+E                    : 16
+FLOAT                : 22
+GT                   : 13
+GTE                  : 15
+IMPLY                : 1
+INT                  : 23
+LPAREN               : 10
+LT                   : 12
+LTE                  : 14
+NAME                 : 10 21
+RPAREN               : 10
+error                : 
+
+Nonterminals, with rules where they appear
+
+action               : 6 7
+actions              : 1 7
+arg                  : 11 11 19 20
+args                 : 10 20
+condition            : 3 4
+conditions           : 1 4
+empty                : 2 5 18
+operator             : 11
+rule                 : 0
+statement            : 8 9
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . rule
+    (1) rule -> . conditions IMPLY actions
+    (2) conditions -> . empty
+    (3) conditions -> . condition
+    (4) conditions -> . condition COMMA conditions
+    (17) empty -> .
+    (9) condition -> . statement
+    (11) condition -> . arg operator arg
+    (10) statement -> . NAME LPAREN args RPAREN
+    (21) arg -> . NAME
+    (22) arg -> . FLOAT
+    (23) arg -> . INT
+
+    IMPLY           reduce using rule 17 (empty -> .)
+    NAME            shift and go to state 7
+    FLOAT           shift and go to state 8
+    INT             shift and go to state 9
+
+    rule                           shift and go to state 1
+    conditions                     shift and go to state 2
+    empty                          shift and go to state 3
+    condition                      shift and go to state 4
+    statement                      shift and go to state 5
+    arg                            shift and go to state 6
+
+state 1
+
+    (0) S' -> rule .
+
+
+
+state 2
+
+    (1) rule -> conditions . IMPLY actions
+
+    IMPLY           shift and go to state 10
+
+
+state 3
+
+    (2) conditions -> empty .
+
+    IMPLY           reduce using rule 2 (conditions -> empty .)
+
+
+state 4
+
+    (3) conditions -> condition .
+    (4) conditions -> condition . COMMA conditions
+
+    IMPLY           reduce using rule 3 (conditions -> condition .)
+    COMMA           shift and go to state 11
+
+
+state 5
+
+    (9) condition -> statement .
+
+    COMMA           reduce using rule 9 (condition -> statement .)
+    IMPLY           reduce using rule 9 (condition -> statement .)
+
+
+state 6
+
+    (11) condition -> arg . operator arg
+    (12) operator -> . LT
+    (13) operator -> . GT
+    (14) operator -> . LTE
+    (15) operator -> . GTE
+    (16) operator -> . E
+
+    LT              shift and go to state 13
+    GT              shift and go to state 14
+    LTE             shift and go to state 15
+    GTE             shift and go to state 16
+    E               shift and go to state 17
+
+    operator                       shift and go to state 12
+
+state 7
+
+    (10) statement -> NAME . LPAREN args RPAREN
+    (21) arg -> NAME .
+
+    LPAREN          shift and go to state 18
+    LT              reduce using rule 21 (arg -> NAME .)
+    GT              reduce using rule 21 (arg -> NAME .)
+    LTE             reduce using rule 21 (arg -> NAME .)
+    GTE             reduce using rule 21 (arg -> NAME .)
+    E               reduce using rule 21 (arg -> NAME .)
+
+
+state 8
+
+    (22) arg -> FLOAT .
+
+    LT              reduce using rule 22 (arg -> FLOAT .)
+    GT              reduce using rule 22 (arg -> FLOAT .)
+    LTE             reduce using rule 22 (arg -> FLOAT .)
+    GTE             reduce using rule 22 (arg -> FLOAT .)
+    E               reduce using rule 22 (arg -> FLOAT .)
+    COMMA           reduce using rule 22 (arg -> FLOAT .)
+    IMPLY           reduce using rule 22 (arg -> FLOAT .)
+    RPAREN          reduce using rule 22 (arg -> FLOAT .)
+
+
+state 9
+
+    (23) arg -> INT .
+
+    LT              reduce using rule 23 (arg -> INT .)
+    GT              reduce using rule 23 (arg -> INT .)
+    LTE             reduce using rule 23 (arg -> INT .)
+    GTE             reduce using rule 23 (arg -> INT .)
+    E               reduce using rule 23 (arg -> INT .)
+    COMMA           reduce using rule 23 (arg -> INT .)
+    IMPLY           reduce using rule 23 (arg -> INT .)
+    RPAREN          reduce using rule 23 (arg -> INT .)
+
+
+state 10
+
+    (1) rule -> conditions IMPLY . actions
+    (5) actions -> . empty
+    (6) actions -> . action
+    (7) actions -> . action COMMA actions
+    (17) empty -> .
+    (8) action -> . statement
+    (10) statement -> . NAME LPAREN args RPAREN
+
+    $end            reduce using rule 17 (empty -> .)
+    NAME            shift and go to state 23
+
+    actions                        shift and go to state 19
+    empty                          shift and go to state 20
+    action                         shift and go to state 21
+    statement                      shift and go to state 22
+
+state 11
+
+    (4) conditions -> condition COMMA . conditions
+    (2) conditions -> . empty
+    (3) conditions -> . condition
+    (4) conditions -> . condition COMMA conditions
+    (17) empty -> .
+    (9) condition -> . statement
+    (11) condition -> . arg operator arg
+    (10) statement -> . NAME LPAREN args RPAREN
+    (21) arg -> . NAME
+    (22) arg -> . FLOAT
+    (23) arg -> . INT
+
+    IMPLY           reduce using rule 17 (empty -> .)
+    NAME            shift and go to state 7
+    FLOAT           shift and go to state 8
+    INT             shift and go to state 9
+
+    condition                      shift and go to state 4
+    conditions                     shift and go to state 24
+    empty                          shift and go to state 3
+    statement                      shift and go to state 5
+    arg                            shift and go to state 6
+
+state 12
+
+    (11) condition -> arg operator . arg
+    (21) arg -> . NAME
+    (22) arg -> . FLOAT
+    (23) arg -> . INT
+
+    NAME            shift and go to state 26
+    FLOAT           shift and go to state 8
+    INT             shift and go to state 9
+
+    arg                            shift and go to state 25
+
+state 13
+
+    (12) operator -> LT .
+
+    NAME            reduce using rule 12 (operator -> LT .)
+    FLOAT           reduce using rule 12 (operator -> LT .)
+    INT             reduce using rule 12 (operator -> LT .)
+
+
+state 14
+
+    (13) operator -> GT .
+
+    NAME            reduce using rule 13 (operator -> GT .)
+    FLOAT           reduce using rule 13 (operator -> GT .)
+    INT             reduce using rule 13 (operator -> GT .)
+
+
+state 15
+
+    (14) operator -> LTE .
+
+    NAME            reduce using rule 14 (operator -> LTE .)
+    FLOAT           reduce using rule 14 (operator -> LTE .)
+    INT             reduce using rule 14 (operator -> LTE .)
+
+
+state 16
+
+    (15) operator -> GTE .
+
+    NAME            reduce using rule 15 (operator -> GTE .)
+    FLOAT           reduce using rule 15 (operator -> GTE .)
+    INT             reduce using rule 15 (operator -> GTE .)
+
+
+state 17
+
+    (16) operator -> E .
+
+    NAME            reduce using rule 16 (operator -> E .)
+    FLOAT           reduce using rule 16 (operator -> E .)
+    INT             reduce using rule 16 (operator -> E .)
+
+
+state 18
+
+    (10) statement -> NAME LPAREN . args RPAREN
+    (18) args -> . empty
+    (19) args -> . arg
+    (20) args -> . arg COMMA args
+    (17) empty -> .
+    (21) arg -> . NAME
+    (22) arg -> . FLOAT
+    (23) arg -> . INT
+
+    RPAREN          reduce using rule 17 (empty -> .)
+    NAME            shift and go to state 26
+    FLOAT           shift and go to state 8
+    INT             shift and go to state 9
+
+    args                           shift and go to state 27
+    empty                          shift and go to state 28
+    arg                            shift and go to state 29
+
+state 19
+
+    (1) rule -> conditions IMPLY actions .
+
+    $end            reduce using rule 1 (rule -> conditions IMPLY actions .)
+
+
+state 20
+
+    (5) actions -> empty .
+
+    $end            reduce using rule 5 (actions -> empty .)
+
+
+state 21
+
+    (6) actions -> action .
+    (7) actions -> action . COMMA actions
+
+    $end            reduce using rule 6 (actions -> action .)
+    COMMA           shift and go to state 30
+
+
+state 22
+
+    (8) action -> statement .
+
+    COMMA           reduce using rule 8 (action -> statement .)
+    $end            reduce using rule 8 (action -> statement .)
+
+
+state 23
+
+    (10) statement -> NAME . LPAREN args RPAREN
+
+    LPAREN          shift and go to state 18
+
+
+state 24
+
+    (4) conditions -> condition COMMA conditions .
+
+    IMPLY           reduce using rule 4 (conditions -> condition COMMA conditions .)
+
+
+state 25
+
+    (11) condition -> arg operator arg .
+
+    COMMA           reduce using rule 11 (condition -> arg operator arg .)
+    IMPLY           reduce using rule 11 (condition -> arg operator arg .)
+
+
+state 26
+
+    (21) arg -> NAME .
+
+    COMMA           reduce using rule 21 (arg -> NAME .)
+    IMPLY           reduce using rule 21 (arg -> NAME .)
+    RPAREN          reduce using rule 21 (arg -> NAME .)
+
+
+state 27
+
+    (10) statement -> NAME LPAREN args . RPAREN
+
+    RPAREN          shift and go to state 31
+
+
+state 28
+
+    (18) args -> empty .
+
+    RPAREN          reduce using rule 18 (args -> empty .)
+
+
+state 29
+
+    (19) args -> arg .
+    (20) args -> arg . COMMA args
+
+    RPAREN          reduce using rule 19 (args -> arg .)
+    COMMA           shift and go to state 32
+
+
+state 30
+
+    (7) actions -> action COMMA . actions
+    (5) actions -> . empty
+    (6) actions -> . action
+    (7) actions -> . action COMMA actions
+    (17) empty -> .
+    (8) action -> . statement
+    (10) statement -> . NAME LPAREN args RPAREN
+
+    $end            reduce using rule 17 (empty -> .)
+    NAME            shift and go to state 23
+
+    action                         shift and go to state 21
+    actions                        shift and go to state 33
+    empty                          shift and go to state 20
+    statement                      shift and go to state 22
+
+state 31
+
+    (10) statement -> NAME LPAREN args RPAREN .
+
+    COMMA           reduce using rule 10 (statement -> NAME LPAREN args RPAREN .)
+    IMPLY           reduce using rule 10 (statement -> NAME LPAREN args RPAREN .)
+    $end            reduce using rule 10 (statement -> NAME LPAREN args RPAREN .)
+
+
+state 32
+
+    (20) args -> arg COMMA . args
+    (18) args -> . empty
+    (19) args -> . arg
+    (20) args -> . arg COMMA args
+    (17) empty -> .
+    (21) arg -> . NAME
+    (22) arg -> . FLOAT
+    (23) arg -> . INT
+
+    RPAREN          reduce using rule 17 (empty -> .)
+    NAME            shift and go to state 26
+    FLOAT           shift and go to state 8
+    INT             shift and go to state 9
+
+    arg                            shift and go to state 29
+    args                           shift and go to state 34
+    empty                          shift and go to state 28
+
+state 33
+
+    (7) actions -> action COMMA actions .
+
+    $end            reduce using rule 7 (actions -> action COMMA actions .)
+
+
+state 34
+
+    (20) args -> arg COMMA args .
+
+    RPAREN          reduce using rule 20 (args -> arg COMMA args .)
+
