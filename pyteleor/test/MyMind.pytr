@@ -1,4 +1,16 @@
-a(belief) ->
-a(1.1) ->
-a(2) ->
-a('string literal') ->
+
+c3, c2(c1(belief2), belief2), x < y -> actuator1(a1)
+
+
+
+
+
+c2('belief') -> goal1()
+->
+
+goal1():
+# test
+    c1() -> actuator1(a2(1,2,3), a4), actuator2(a3)
+    -> actuator3(a1), actuator3(a2)
+
+# test2
