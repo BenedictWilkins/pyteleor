@@ -118,7 +118,8 @@ class Traverse:
 
     def __t_condition(self, head, *body):
         if head in interpret.comparison_operators:
-            return self.funs['comparison'](head, body[0]) #TODO
+            args = [self.__t_arg(arg) for arg in body[0]]
+            return self.funs['comparison'](head, args) #TODO
         else:
             if len(body) == 0:
                 return self.funs['attribute'](head)

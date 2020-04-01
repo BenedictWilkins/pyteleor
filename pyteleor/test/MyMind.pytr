@@ -1,16 +1,12 @@
+grid_size == None -> find_grid_size()
+-> speaker(speak(grid_size))
 
-c3, c2(c1(belief2), belief2), x < y -> actuator1(a1)
+find_grid_size():
+    orientation == north -> motor(turn(right))
+    orientation == west -> motor(turn(left))
 
-
-
-
-
-c2('belief') -> goal1()
-->
-
-goal1():
-# test
-    c1() -> actuator1(a2(1,2,3), a4), actuator2(a3)
-    -> actuator3(a1), actuator3(a2)
-
-# test2
+    orientation == east, x >= y -> motor(move)
+    orientation == east, x < y -> motor(turn(right))
+    
+    orientation == south, y >= x -> motor(move)
+    orientation == south, y < x -> motor(turn(left))

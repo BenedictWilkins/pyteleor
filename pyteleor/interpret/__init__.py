@@ -4,7 +4,7 @@ from ply import yacc
 import copy
 
 tokens = ('COMMENT', 'STR', 'NAME', 'IMPLY', 'LPAREN', 'RPAREN', 'COMMA', 'NEWLINE',
-          'FLOAT', 'INT', 'LT', 'GT', 'LTE', 'GTE', 'E', 'COLON', 'BOOL')
+          'FLOAT', 'INT', 'LT', 'GT', 'LTE', 'GTE', 'E', 'NE', 'COLON', 'BOOL', 'NONE')
 
 t_COMMENT = r"\#[^\n]*"
 #t_STR = r"[\'\"](.+?)[\'\"]"
@@ -13,6 +13,11 @@ t_IMPLY = r"->"
 t_LPAREN = r"\("
 t_RPAREN = r"\)"
 t_COMMA = r","
+
+def t_NONE(t):
+    r"None"
+    t.value = None
+    return t
 
 def t_BOOL(t):
     r"(True|False)"
@@ -35,12 +40,14 @@ t_GT  = r">"
 t_LTE = r"<="
 t_GTE = r">="
 t_E   = r"=="
+t_NE  = r"!="
 
 comparison_operators = {t_LT:lambda x, y: x < y,
                         t_GT:lambda x, y: x > y,
                         t_LTE: lambda x, y: x <= y,
                         t_GTE: lambda x, y: x >= y,
-                        t_E: lambda x, y: x == y}
+                        t_E: lambda x, y: x == y,
+                        t_NE: lambda x, y: x != y}
 
 t_ignore = " \t"
 
@@ -149,7 +156,8 @@ def p_coperator(p):
                  | GT 
                  | LTE
                  | GTE 
-                 | E '''
+                 | E 
+                 | NE '''
     p[0] = p[1]
 
 def p_empty(p):
@@ -173,6 +181,7 @@ def p_literal(p):
             | FLOAT
             | INT 
             | BOOL
+            | NONE
     '''
     p[0] = p[1]
 
