@@ -1,4 +1,5 @@
 import vacuumworld
+
 from vacuumworld.vwc import action, direction, orientation
 
 from pyteleor import Mind

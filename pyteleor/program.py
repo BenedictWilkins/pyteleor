@@ -221,7 +221,7 @@ class Attribute:
         return self.attr
 
     def __repr__(self):
-        return "." + str(self)
+        return str(self)
 
 class Literal:
 
@@ -235,7 +235,7 @@ class Literal:
         return str(self.value)
 
     def __repr__(self):
-        return "." + str(self)
+        return str(self)
 
 
 

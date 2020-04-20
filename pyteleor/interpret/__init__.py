@@ -1,10 +1,16 @@
 from ply import lex
 from ply import yacc
 
+try:
+    from .cython import cythonize
+except:
+    from pyteleor.interpret.cython import cythonize
+ 
 import copy
 
 tokens = ('COMMENT', 'STR', 'NAME', 'IMPLY', 'LPAREN', 'RPAREN', 'COMMA', 'NEWLINE',
-          'FLOAT', 'INT', 'LT', 'GT', 'LTE', 'GTE', 'E', 'NE', 'COLON', 'BOOL', 'NONE')
+          'FLOAT', 'INT', 'LT', 'GT', 'LTE', 'GTE', 'E', 'NE', 'COLON', 'BOOL', 'NONE', 'DOT',
+          'PLUS', 'MINUS', 'MULT', 'DIV')
 
 t_COMMENT = r"\#[^\n]*"
 #t_STR = r"[\'\"](.+?)[\'\"]"
@@ -13,6 +19,7 @@ t_IMPLY = r"->"
 t_LPAREN = r"\("
 t_RPAREN = r"\)"
 t_COMMA = r","
+t_DOT = r"\."
 
 def t_NONE(t):
     r"None"
@@ -41,6 +48,20 @@ t_LTE = r"<="
 t_GTE = r">="
 t_E   = r"=="
 t_NE  = r"!="
+
+#expression operators
+t_PLUS    = r'\+'
+t_MINUS   = r'-'
+t_MULT  = r'\*'
+t_DIV  = r'/'
+
+
+precedence = (
+    ('left','PLUS','MINUS'),
+    ('left','MULT','DIV'),
+    #('right','UMINUS'),
+    )
+
 
 comparison_operators = {t_LT:lambda x, y: x < y,
                         t_GT:lambda x, y: x > y,
@@ -83,16 +104,32 @@ def p_program_1(p):
     p[0] = [p[1]]
 
 def p_line(p):
-    ''' line : plan
-             | plan COMMENT
+    ''' line : goal
+             | goal COMMENT
              | rule
              | rule COMMENT '''
     p[0] = p[1]
     #print('line:',p[0])
 
-def p_plan(p):
-    '''plan : statement COLON '''
-    p[0] = p[1]
+
+def p_goal1(p):
+    ''' goal : NAME COLON '''
+    p[0] = (p[1],tuple())
+
+"""
+def p_goal(p):
+    ''' goal : NAME LPAREN gargs RPAREN '''
+    p[0] = [p[1], *p[3]]
+
+def p_goal_args(p):
+    ''' gargs : NAME COMMA gargs '''
+    p[0] = [p[1], *p[3]]
+
+def p_goal_args1(p):
+    ''' gargs : NAME 
+              | empty'''
+    p[0] = [p[1]]
+"""
 
 def p_line_empty(p):
     ''' line : COMMENT
@@ -101,97 +138,101 @@ def p_line_empty(p):
     #print('line:',p[0])
 
 def p_rule(p):
-    '''rule : conditions IMPLY actions '''
+    ''' rule : statements IMPLY statements '''
     p[0] = (p[1], p[3]) #conditions, actions
-    
-# conditions
-def p_conditions0(p):
-    ''' conditions : empty '''
-    p[0] = []
 
-def p_conditions1(p):
-    ''' conditions : condition '''
-    p[0] = [p[1]]
-
-def p_conditionsn(p):
-    ''' conditions : condition COMMA conditions '''
+def p_statements(p):
+    ''' statements : statements COMMA expression'''
     p[0] = [p[1], *p[3]]
 
-# actions
-def p_actions0(p):
-    ''' actions : empty '''
-    p[0] = []
-
-def p_actions1(p):
-    ''' actions : action '''
+def p_statements1(p):
+    ''' statements : expression '''
     p[0] = [p[1]]
 
-def p_actionsn(p):
-    ''' actions : action COMMA actions '''
-    p[0] = [p[1], *p[3]]
+def p_statements0(p):
+    ''' statements : empty '''
+    p[0] = []
+ 
+# BODMASC (Brackets, Order, Division, Multiplication, Addition, Subtraction, Comparison)
 
-def p_action(p):
-    ''' action :  NAME LPAREN args RPAREN '''
-    p[0] = (p[1], p[3])
+def p_expression(p):
+    ''' expression : arth compare arth '''
+    p[0] = [(p[2], (p[1], p[3]))] #create parse syntax like a(a,a)
 
-def p_condition(p):
-    ''' condition : statement '''
+def p_expression_t(p):
+    ''' expression : arth '''
     p[0] = p[1]
 
-def p_condition1(p):
-    ''' condition : NAME '''
-    p[0] = (p[1],)
+def p_arth(p):
+    ''' arth : arth PLUS term 
+             | arth MINUS term '''
+    p[0] = [(p[2], (p[1], p[3]))]
+
+def p_arth_t(p):
+    ''' arth : term '''
+    p[0] = p[1]
+
+def p_term(p):
+    ''' term : term MULT factor 
+             | term DIV factor '''
+    p[0] = [(p[2], (p[1], p[3]))]
+
+def p_term_f(p):
+    ''' term : factor '''
+    p[0] = p[1]
+
+def p_factor_p(p):
+    ''' factor : LPAREN expression RPAREN '''
+    p[0] = p[2]
+
+def p_factor_s(p):
+    ''' factor : statement '''
+    p[0] = p[1]
+
+# ============================
 
 def p_statement(p):
-    '''statement : NAME LPAREN args RPAREN'''
+    ''' statement : atom DOT statement '''
+    p[0] = [p[1], *p[3]]
+
+def p_statement1(p):
+    ''' statement : atom '''
+    p[0] = [p[1]]
+
+# valid atoms: s, s(), s(s), s(s,s), ..., s(s.s), s(s.s()
+def p_atom(p):
+    '''atom : NAME LPAREN statements RPAREN'''
     p[0] = (p[1], p[3])
-    #print('statement', p[0])
+
+def p_atom1(p):
+    '''atom : NAME '''
+    p[0] = p[1]
+
+def p_atom_literal(p):
+    ''' atom : literal '''
+    p[0] = p[1]
 
 def p_compare(p):
-    ''' condition : arg operator arg '''
-    p[0] = (p[2], (p[1], p[3]))
+    ''' compare : LT 
+                | GT 
+                | LTE
+                | GTE 
+                | E 
+                | NE '''
+    p[0] = p[1]
 
-def p_coperator(p):
-    ''' operator : LT 
-                 | GT 
-                 | LTE
-                 | GTE 
-                 | E 
-                 | NE '''
+def p_literal(p):
+    ''' literal : STR
+                | FLOAT
+                | INT 
+                | BOOL
+                | NONE
+    '''
     p[0] = p[1]
 
 def p_empty(p):
     'empty : '
     pass
-
-def p_args0(p):
-    ''' args : empty'''
-    p[0] = tuple()
-
-def p_args1(p):
-    ''' args : arg '''
-    p[0] = (p[1],)
-
-def p_argsn(p):
-    ''' args : arg COMMA args '''
-    p[0] = (p[1], *p[3])
-
-def p_literal(p):
-    ''' arg : STR
-            | FLOAT
-            | INT 
-            | BOOL
-            | NONE
-    '''
-    p[0] = p[1]
-
-def p_arg_statement(p):
-    '''arg : statement '''
-    p[0] = p[1]
-
-def p_arg(p):
-    '''arg : NAME ''' 
-    p[0] = (p[1],)
 
 yacc.yacc()
 
@@ -203,34 +244,34 @@ class IdentationError(Exception):
 
 
 def parse(program):
-
-    
+    print("?")
+    '''
     def process_plan(plan): #TODO plans are now called goals
         plan_name = plan[0][3]
 
         plan = [j for j in plan if j[2] != ()] #remove all empty lines
         if len(plan) <= 1:
-            raise ParseError("Parse Error: Empty plan: {0}".format(plan_name))
+            raise ParseError("Parse Error: Empty goal: {0}".format(plan_name))
 
         head_indent = plan[0][1]
         body_indent = plan[1][1]
         #print(head_indent, body_indent)
         if head_indent >= body_indent:
-            raise IdentationError("Indentation Error: body of plan '{0}' at line {1} - '{2}' must be indented".format(plan_name, plan[1][0], plan[1][3]))
+            raise IdentationError("Indentation Error: body of goal '{0}' at line {1} - '{2}' must be indented".format(plan_name, plan[1][0], plan[1][3]))
 
         for l in plan[1:]:
             if l[1] != body_indent:
                 raise IdentationError("Indentation Error: Inconsistent indentation {0} at line {1} - '{2}'".format(l[1], l[0], l[3]))
 
         return plan
-
+    '''
  
-    program = "main():\n" + program.rstrip()
-    s_program = program.split('\n')
-    #print(program)
+    program = "main:\n" + program.rstrip()
     
     p = yacc.parse(program)
-    
+    cythonize(p)
+
+    '''
     i = INDENT_COUNT
 
     #TODO refactor this is quick and dirty...
@@ -248,20 +289,25 @@ def parse(program):
     INDENT_COUNT.append(0) #main is always at indent 0
 
     def debug(): #TODO remove
-        for plan in p:
-            print(plan[0])
-            for l in plan[1:]:
-                print("  ", l)  
-    #debug()
-    
+        for goal in p:
+            for rule in goal:
+                print(rule)
+                
+
+    debug()
+    '''
+
+
     return p
     
 if __name__ == "__main__": 
     import os
 
+
     print(os.path.dirname(__file__) )
-    with open(os.path.dirname(__file__)  + "/../test/MyMind.pytr") as f:
-        p = parse(f.read())
+    with open(os.path.dirname(__file__)  + "/../test/test.pytr") as f:
+        r = f.read()
+        p = parse(r)
         #p = yacc.parse("\n" + f.read().strip())
 '''
     yacc.parse("a(\"test\") -> b() \n a() -> d(1) #comment \n #comment2 \n")

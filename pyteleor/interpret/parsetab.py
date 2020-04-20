@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'BOOL COLON COMMA COMMENT E FLOAT GT GTE IMPLY INT LPAREN LT LTE NAME NE NEWLINE NONE RPAREN STR program : program NEWLINE line  program : line  line : plan\n             | plan COMMENT\n             | rule\n             | rule COMMENT plan : statement COLON  line : COMMENT\n             | empty rule : conditions IMPLY actions  conditions : empty  conditions : condition  conditions : condition COMMA conditions  actions : empty  actions : action  actions : action COMMA actions  action :  NAME LPAREN args RPAREN  condition : statement  condition : NAME statement : NAME LPAREN args RPAREN condition : arg operator arg  operator : LT \n                 | GT \n                 | LTE\n                 | GTE \n                 | E \n                 | NE empty :  args : empty args : arg  args : arg COMMA args  arg : STR\n            | FLOAT\n            | INT \n            | BOOL\n            | NONE\n    arg : statement arg : NAME '
+_lr_signature = 'COLON COMMA DOT IMPLY NAME NEWLINE program : program NEWLINE line  program : line  line : satoms COLON\n             | atoms IMPLY  satoms : ndot COMMA satoms  satoms : ndot  atoms : ndot COMMA atoms\n              | NAME COMMA atoms  atoms : NAME \n              | ndot  ndot : NAME DOT '
     
-_lr_action_items = {'COMMENT':([0,3,5,17,20,21,32,33,34,46,50,53,],[4,18,19,4,-7,-28,-10,-14,-15,-28,-16,-17,]),'NEWLINE':([0,1,2,3,4,5,6,17,18,19,20,21,31,32,33,34,46,50,53,],[-28,17,-2,-3,-8,-5,-9,-28,-4,-6,-7,-28,-1,-10,-14,-15,-28,-16,-17,]),'$end':([0,1,2,3,4,5,6,17,18,19,20,21,31,32,33,34,46,50,53,],[-28,0,-2,-3,-8,-5,-9,-28,-4,-6,-7,-28,-1,-10,-14,-15,-28,-16,-17,]),'IMPLY':([0,6,7,8,9,10,12,13,14,15,16,17,23,36,40,41,42,43,44,45,48,],[-28,-11,-18,21,-19,-12,-32,-33,-34,-35,-36,-28,-28,-38,-37,-13,-11,-18,-19,-21,-20,]),'NAME':([0,17,21,22,23,24,25,26,27,28,29,30,46,47,49,],[9,9,35,36,44,36,-22,-23,-24,-25,-26,-27,35,36,36,]),'STR':([0,17,22,23,24,25,26,27,28,29,30,47,49,],[12,12,12,12,12,-22,-23,-24,-25,-26,-27,12,12,]),'FLOAT':([0,17,22,23,24,25,26,27,28,29,30,47,49,],[13,13,13,13,13,-22,-23,-24,-25,-26,-27,13,13,]),'INT':([0,17,22,23,24,25,26,27,28,29,30,47,49,],[14,14,14,14,14,-22,-23,-24,-25,-26,-27,14,14,]),'BOOL':([0,17,22,23,24,25,26,27,28,29,30,47,49,],[15,15,15,15,15,-22,-23,-24,-25,-26,-27,15,15,]),'NONE':([0,17,22,23,24,25,26,27,28,29,30,47,49,],[16,16,16,16,16,-22,-23,-24,-25,-26,-27,16,16,]),'COLON':([7,48,],[20,-20,]),'COMMA':([7,9,10,12,13,14,15,16,34,36,39,40,43,44,45,48,53,],[-18,-19,23,-32,-33,-34,-35,-36,46,-38,49,-37,-18,-19,-21,-20,-17,]),'LT':([7,9,11,12,13,14,15,16,43,44,48,],[-37,-38,25,-32,-33,-34,-35,-36,-37,-38,-20,]),'GT':([7,9,11,12,13,14,15,16,43,44,48,],[-37,-38,26,-32,-33,-34,-35,-36,-37,-38,-20,]),'LTE':([7,9,11,12,13,14,15,16,43,44,48,],[-37,-38,27,-32,-33,-34,-35,-36,-37,-38,-20,]),'GTE':([7,9,11,12,13,14,15,16,43,44,48,],[-37,-38,28,-32,-33,-34,-35,-36,-37,-38,-20,]),'E':([7,9,11,12,13,14,15,16,43,44,48,],[-37,-38,29,-32,-33,-34,-35,-36,-37,-38,-20,]),'NE':([7,9,11,12,13,14,15,16,43,44,48,],[-37,-38,30,-32,-33,-34,-35,-36,-37,-38,-20,]),'LPAREN':([9,35,36,44,],[22,47,22,22,]),'RPAREN':([12,13,14,15,16,22,36,37,38,39,40,47,48,49,51,52,],[-32,-33,-34,-35,-36,-28,-38,48,-29,-30,-37,-28,-20,-28,53,-31,]),}
+_lr_action_items = {'NAME':([0,7,10,11,18,],[6,6,6,6,6,]),'$end':([1,2,8,9,13,],[0,-2,-3,-4,-1,]),'NEWLINE':([1,2,8,9,13,],[7,-2,-3,-4,-1,]),'COLON':([3,5,12,14,],[8,-6,-11,-5,]),'IMPLY':([4,5,6,12,15,16,17,],[9,-10,-9,-11,-7,-8,-10,]),'COMMA':([5,6,12,17,],[10,11,-11,18,]),'DOT':([6,],[12,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'program':([0,],[1,]),'line':([0,17,],[2,31,]),'plan':([0,17,],[3,3,]),'rule':([0,17,],[5,5,]),'empty':([0,17,21,22,23,46,47,49,],[6,6,33,38,42,33,38,38,]),'statement':([0,17,22,23,24,47,49,],[7,7,40,43,40,40,40,]),'conditions':([0,17,23,],[8,8,41,]),'condition':([0,17,23,],[10,10,10,]),'arg':([0,17,22,23,24,47,49,],[11,11,39,11,45,39,39,]),'operator':([11,],[24,]),'actions':([21,46,],[32,50,]),'action':([21,46,],[34,34,]),'args':([22,47,49,],[37,51,52,]),}
+_lr_goto_items = {'program':([0,],[1,]),'line':([0,7,],[2,13,]),'satoms':([0,7,10,],[3,3,14,]),'atoms':([0,7,10,11,18,],[4,4,15,16,15,]),'ndot':([0,7,10,11,18,],[5,5,5,17,17,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,42 +27,15 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> program","S'",1,None,None,None),
-  ('program -> program NEWLINE line','program',3,'p_program_n','__init__.py',78),
-  ('program -> line','program',1,'p_program_1','__init__.py',82),
-  ('line -> plan','line',1,'p_line','__init__.py',86),
-  ('line -> plan COMMENT','line',2,'p_line','__init__.py',87),
-  ('line -> rule','line',1,'p_line','__init__.py',88),
-  ('line -> rule COMMENT','line',2,'p_line','__init__.py',89),
-  ('plan -> statement COLON','plan',2,'p_plan','__init__.py',94),
-  ('line -> COMMENT','line',1,'p_line_empty','__init__.py',98),
-  ('line -> empty','line',1,'p_line_empty','__init__.py',99),
-  ('rule -> conditions IMPLY actions','rule',3,'p_rule','__init__.py',104),
-  ('conditions -> empty','conditions',1,'p_conditions0','__init__.py',109),
-  ('conditions -> condition','conditions',1,'p_conditions1','__init__.py',113),
-  ('conditions -> condition COMMA conditions','conditions',3,'p_conditionsn','__init__.py',117),
-  ('actions -> empty','actions',1,'p_actions0','__init__.py',122),
-  ('actions -> action','actions',1,'p_actions1','__init__.py',126),
-  ('actions -> action COMMA actions','actions',3,'p_actionsn','__init__.py',130),
-  ('action -> NAME LPAREN args RPAREN','action',4,'p_action','__init__.py',134),
-  ('condition -> statement','condition',1,'p_condition','__init__.py',138),
-  ('condition -> NAME','condition',1,'p_condition1','__init__.py',142),
-  ('statement -> NAME LPAREN args RPAREN','statement',4,'p_statement','__init__.py',146),
-  ('condition -> arg operator arg','condition',3,'p_compare','__init__.py',151),
-  ('operator -> LT','operator',1,'p_coperator','__init__.py',155),
-  ('operator -> GT','operator',1,'p_coperator','__init__.py',156),
-  ('operator -> LTE','operator',1,'p_coperator','__init__.py',157),
-  ('operator -> GTE','operator',1,'p_coperator','__init__.py',158),
-  ('operator -> E','operator',1,'p_coperator','__init__.py',159),
-  ('operator -> NE','operator',1,'p_coperator','__init__.py',160),
-  ('empty -> <empty>','empty',0,'p_empty','__init__.py',164),
-  ('args -> empty','args',1,'p_args0','__init__.py',168),
-  ('args -> arg','args',1,'p_args1','__init__.py',172),
-  ('args -> arg COMMA args','args',3,'p_argsn','__init__.py',176),
-  ('arg -> STR','arg',1,'p_literal','__init__.py',180),
-  ('arg -> FLOAT','arg',1,'p_literal','__init__.py',181),
-  ('arg -> INT','arg',1,'p_literal','__init__.py',182),
-  ('arg -> BOOL','arg',1,'p_literal','__init__.py',183),
-  ('arg -> NONE','arg',1,'p_literal','__init__.py',184),
-  ('arg -> statement','arg',1,'p_arg_statement','__init__.py',189),
-  ('arg -> NAME','arg',1,'p_arg','__init__.py',193),
+  ('program -> program NEWLINE line','program',3,'p_program_n','test.py',26),
+  ('program -> line','program',1,'p_program_1','test.py',30),
+  ('line -> satoms COLON','line',2,'p_line','test.py',34),
+  ('line -> atoms IMPLY','line',2,'p_line','test.py',35),
+  ('satoms -> ndot COMMA satoms','satoms',3,'p_satoms','test.py',39),
+  ('satoms -> ndot','satoms',1,'p_satoms1','test.py',43),
+  ('atoms -> ndot COMMA atoms','atoms',3,'p_atoms','test.py',47),
+  ('atoms -> NAME COMMA atoms','atoms',3,'p_atoms','test.py',48),
+  ('atoms -> NAME','atoms',1,'p_atoms1','test.py',52),
+  ('atoms -> ndot','atoms',1,'p_atoms1','test.py',53),
+  ('ndot -> NAME DOT','ndot',2,'p_ndot','test.py',57),
 ]
